@@ -1,0 +1,49 @@
+$grid-size: 15;
+$cell-size: 100% / $grid-size;
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  background: $theme100;
+  margin: 5rem 0;
+}
+.container {
+  margin: 0 auto;
+  width: 50vw;
+}
+@media screen and (max-width: 768px) {
+  .container {
+    margin: 0 auto;
+    width: 80vw;
+  }
+}
+.grid {
+  margin-top: 2.5rem;
+  padding: 1rem;
+  cursor: pointer;
+  background: $theme-color;
+  width: 100%;
+  height: auto;
+  border-radius: 6px;
+}
+.row {
+  width: 100%;
+  height: $cell-size;
+}
+.cell {
+  height: 100%;
+  width: $cell-size;
+  background: $theme300;
+  padding: 0.3rem;
+  color: $theme900;
+  box-shadow: 0 2px 5px 0 rgba(0,0,0,0.16),0 2px 10px 0 rgba(0,0,0,0.12);
+  will-change: opacity, transform;
+  transition: all .3s ease-out;
+  &:hover {
+    transform: scale3d(1.5,1.5,1.5);
+    z-index: 2;
+    box-shadow: 0 10px 22px 0 rgba(0,0,0,0.18),0 8px 30px 0 rgba(0,0,0,0.15);
+  }
+}
