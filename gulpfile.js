@@ -23,6 +23,7 @@ var dependencies = [
     'react',
     'react-dom',
     'react-router',
+    'react-tap-event-plugin',
     'lodash'
 ];
 
@@ -105,7 +106,7 @@ gulp.task('browserify-watch', ['browserify-vendor'], function() {
  |--------------------------------------------------------------------------
  */
 gulp.task('styles', function() {
-    return gulp.src('app/stylesheets/main.sass')
+    return gulp.src('app/stylesheets/main.scss')
         .pipe(plumber())
         .pipe(sass())
         .pipe(autoprefixer())
