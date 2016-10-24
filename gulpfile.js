@@ -24,7 +24,7 @@ var dependencies = [
     'react-dom',
     'react-router',
     'react-tap-event-plugin',
-    'lodash'
+    'react-ink'
 ];
 
 // /*

@@ -1,5 +1,5 @@
 let words = ['BEAUTIFUL', 'COURAGE', 'GLORY', 'AWESOME', 'LANGUAGE', 'TEST', 'CHECK', 'LOVE', 'ANGEL', 'SACRIFICE'];
-let ValidWords = {
+var ValidWords = {
   fetch: function () {
     // returning a Promise because that is what fetch does.
     return new Promise(function (resolve, reject) {

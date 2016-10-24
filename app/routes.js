@@ -4,7 +4,6 @@ import App from './components/App';
 import Home from './components/Home';
 
 // React-router will handle routing by itself. So you are, basically, not switching pages, it just looks like so
-// You can read more here: https://github.com/reactjs/react-router
 
 export default (
   <Route component={App}>
