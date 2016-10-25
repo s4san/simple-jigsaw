@@ -43,17 +43,26 @@ class GameStore {
   }
   /**
    * Select a given cell and validate
+   * @TODO Refactor this method; It's doing too much - BREAK IT DOWN!
    **/
   selectCell(pos) {
     let range = clone(this.state.currentRange);
-    //Double-check if user has selected valid cell
+    //check if user has selected valid cell
     if(this.gridValidator.validateCell(pos)) {
       if(this.state.isValid) {
         //Valid cell already selected, continue validating appending new cell
         range.push(pos);
-        if(GameGridValidator.validateRange(range) && range.length === 2 && GameGridValidator.getExpandableIndex(range[0], range[1]) > -1) {
+        if(GameGridValidator.validateRange(range) && range.length > 1 && GameGridValidator.getExpandableIndex(range[range.length - 2], range[range.length - 1]) > -1) {
           //If a range of cells are selected; Validate the range and the word formed
-          let expandedRange = GameGridValidator.expand(range[0], range[1]);
+          let expandedRange = [...range.slice(0, range.length-2), ...GameGridValidator.expand(range[range.length - 2], range[range.length - 1])];
+          //Remove Duplicates while expanding
+          expandedRange = expandedRange.reduce((newRange, pos, index) => {
+            if(!newRange.find(newPos => newPos[0] === pos[0] && newPos[1] === pos[1])) {
+              newRange.push(pos);
+            }
+            return newRange;
+          }, []);
+          //Validate Word Formed
           let word = this.gridValidator.getValidatedWord(expandedRange);
           this.setState({
             isValid: !word,

@@ -262,7 +262,9 @@ var Cell = function (_React$Component) {
   }, {
     key: 'componentWillMount',
     value: function componentWillMount() {
-      _GameStore2.default.listen(this.onStoreChange);
+      if (this.props.occupied) {
+        _GameStore2.default.listen(this.onStoreChange);
+      }
     }
     /**
      * Unlisten on unmount
@@ -271,7 +273,9 @@ var Cell = function (_React$Component) {
   }, {
     key: 'componentWillUnmount',
     value: function componentWillUnmount() {
-      _GameStore2.default.unlisten(this.onStoreChange);
+      if (this.props.occupied) {
+        _GameStore2.default.unlisten(this.onStoreChange);
+      }
     }
     /**
      * Make Cell a Perfect Square *after* rendering
@@ -294,8 +298,27 @@ var Cell = function (_React$Component) {
   }, {
     key: 'selectCell',
     value: function selectCell(e) {
-      if (!this.state.isSelected && !this.state.isCorrect) {
+      if (this.props.occupied && !this.state.isSelected && !this.state.isCorrect) {
         _GameActions2.default.selectCell(this.props.index);
+      }
+    }
+  }, {
+    key: 'pressCell',
+    value: function pressCell(e) {
+      if (!this.props.occupied) {
+        this.setState({
+          isWrong: true
+        });
+      }
+    }
+  }, {
+    key: 'unpressCell',
+    value: function unpressCell(e) {
+      if (!this.props.occupied && this.state.isWrong) {
+        _GameActions2.default.selectCell(this.props.index);
+        this.setState({
+          isWrong: false
+        });
       }
     }
     /**
@@ -305,12 +328,15 @@ var Cell = function (_React$Component) {
   }, {
     key: 'render',
     value: function render() {
+      var className = (this.state.isSelected ? 'selected' : '') + ' ' + (this.state.isCorrect ? 'correct' : '') + ' ' + (this.state.isWrong ? 'wrong' : '');
       return _react2.default.createElement(
         'div',
         {
           ref: this.setDim.bind(this),
-          className: 'cell flex align-center justify-center ' + (this.state.isSelected ? 'selected' : '') + ' ' + (this.state.isCorrect ? 'correct' : ''),
-          onClick: this.selectCell.bind(this)
+          className: 'cell flex align-center justify-center ' + className,
+          onClick: this.selectCell.bind(this),
+          onMouseDown: this.pressCell.bind(this),
+          onMouseOut: this.unpressCell.bind(this)
         },
         _react2.default.createElement(_reactInk2.default, null),
         this.props.content
@@ -326,12 +352,14 @@ exports.default = Cell;
 
 Cell.defaultProps = {
   content: 'A',
-  index: [-1, -1]
+  index: [-1, -1],
+  occupied: false
 };
 
 Cell.propTypes = {
   content: _react2.default.PropTypes.string.isRequired,
-  index: _react2.default.PropTypes.array.isRequired
+  index: _react2.default.PropTypes.array.isRequired,
+  occupied: _react2.default.PropTypes.bool.isRequired
 };
 
 },{"../../actions/GameActions":1,"../../stores/GameStore":15,"react":"react","react-ink":"react-ink"}],6:[function(require,module,exports){
@@ -517,7 +545,7 @@ var Row = function (_React$Component) {
         'div',
         { className: 'row flex align-center justify-between' },
         this.props.row.map(function (cell, col) {
-          return _react2.default.createElement(_Cell2.default, { content: cell.char, index: [row, col], key: cell.char + '-' + col });
+          return _react2.default.createElement(_Cell2.default, { content: cell.char, index: [row, col], occupied: cell.occupied, key: cell.char + '-' + col });
         })
       );
     }
@@ -1175,20 +1203,31 @@ var GameStore = function () {
     }
     /**
      * Select a given cell and validate
+     * @TODO Refactor this method; It's doing too much - BREAK IT DOWN!
      **/
 
   }, {
     key: 'selectCell',
     value: function selectCell(pos) {
       var range = clone(this.state.currentRange);
-      //Double-check if user has selected valid cell
+      //check if user has selected valid cell
       if (this.gridValidator.validateCell(pos)) {
         if (this.state.isValid) {
           //Valid cell already selected, continue validating appending new cell
           range.push(pos);
-          if (_GameGridValidator2.default.validateRange(range) && range.length === 2 && _GameGridValidator2.default.getExpandableIndex(range[0], range[1]) > -1) {
+          if (_GameGridValidator2.default.validateRange(range) && range.length > 1 && _GameGridValidator2.default.getExpandableIndex(range[range.length - 2], range[range.length - 1]) > -1) {
             //If a range of cells are selected; Validate the range and the word formed
-            var expandedRange = _GameGridValidator2.default.expand(range[0], range[1]);
+            var expandedRange = [].concat(_toConsumableArray(range.slice(0, range.length - 2)), _toConsumableArray(_GameGridValidator2.default.expand(range[range.length - 2], range[range.length - 1])));
+            //Remove Duplicates while expanding
+            expandedRange = expandedRange.reduce(function (newRange, pos, index) {
+              if (!newRange.find(function (newPos) {
+                return newPos[0] === pos[0] && newPos[1] === pos[1];
+              })) {
+                newRange.push(pos);
+              }
+              return newRange;
+            }, []);
+            //Validate Word Formed
             var word = this.gridValidator.getValidatedWord(expandedRange);
             this.setState({
               isValid: !word,

@@ -31,13 +31,17 @@ export default class Cell extends React.Component {
    * Attach Store Change Listener
    **/
   componentWillMount() {
-    GameStore.listen(this.onStoreChange);
+    if(this.props.occupied) {
+      GameStore.listen(this.onStoreChange);
+    }
   }
   /**
    * Unlisten on unmount
    **/
   componentWillUnmount() {
-    GameStore.unlisten(this.onStoreChange);
+    if(this.props.occupied) {
+      GameStore.unlisten(this.onStoreChange);
+    }
   }
   /**
    * Make Cell a Perfect Square *after* rendering
@@ -54,19 +58,37 @@ export default class Cell extends React.Component {
    * Select Cell
    **/
   selectCell(e) {
-    if(!this.state.isSelected && !this.state.isCorrect) {
+    if(this.props.occupied && !this.state.isSelected && !this.state.isCorrect) {
       GameActions.selectCell(this.props.index);
+    }
+  }
+  pressCell(e) {
+    if(!this.props.occupied) {
+      this.setState({
+        isWrong: true
+      });
+    }
+  }
+  unpressCell(e) {
+    if(!this.props.occupied && this.state.isWrong) {
+      GameActions.selectCell(this.props.index);
+      this.setState({
+        isWrong: false
+      });
     }
   }
   /**
    * Render Cell
    **/
   render() {
+    let className = `${this.state.isSelected ? 'selected' : ''} ${this.state.isCorrect ? 'correct' : ''} ${this.state.isWrong ? 'wrong' : ''}`;
     return (
       <div
         ref={this.setDim.bind(this)}
-        className={`cell flex align-center justify-center ${this.state.isSelected ? 'selected' : ''} ${this.state.isCorrect ? 'correct' : ''}`}
+        className={`cell flex align-center justify-center ${className}`}
         onClick={this.selectCell.bind(this)}
+        onMouseDown={this.pressCell.bind(this)}
+        onMouseOut={this.unpressCell.bind(this)}
       >
         <Ink />
         {this.props.content}
@@ -77,10 +99,12 @@ export default class Cell extends React.Component {
 
 Cell.defaultProps = {
   content: 'A',
-  index: [-1, -1]
+  index: [-1, -1],
+  occupied: false
 };
 
 Cell.propTypes = {
   content: React.PropTypes.string.isRequired,
-  index: React.PropTypes.array.isRequired
+  index: React.PropTypes.array.isRequired,
+  occupied: React.PropTypes.bool.isRequired
 };

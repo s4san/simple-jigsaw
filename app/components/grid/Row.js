@@ -10,7 +10,7 @@ export default class Row extends React.Component {
     return (
       <div className="row flex align-center justify-between">
         {
-          this.props.row.map((cell, col) => <Cell content={cell.char} index={[row, col]} key={`${cell.char}-${col}`} />)
+          this.props.row.map((cell, col) => <Cell content={cell.char} index={[row, col]} occupied={cell.occupied} key={`${cell.char}-${col}`} />)
         }
       </div>
     )
