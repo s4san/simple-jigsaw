@@ -13,7 +13,6 @@ export default class Home extends React.Component {
 
   componentDidMount() {
     let playerID = parseInt(this.params.id, 10) || 1;
-    console.log(this.params.id, playerID);
     GameActions.setActivePlayerID(playerID);
   }
 

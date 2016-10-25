@@ -10,7 +10,7 @@ export default class Navbar extends React.Component {
         <header className="flex align-center justify-center">
           <h1>Ninja JigSaw</h1>
         </header>
-        <ul className="flex align-center justify-between">
+        <ul className="flex align-center justify-center">
           <li className="flex align-center justify-center">
             <NewGame />
           </li>
