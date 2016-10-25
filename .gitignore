@@ -82,7 +82,4 @@ public/bundle/*
 logs
 .DS_Store
 dist
-public/rev-manifest.json
-public/service-worker.js
-public/rev/
-public/bundles/
+public/*

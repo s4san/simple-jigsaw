@@ -23,9 +23,11 @@ class GameStore {
       foundRanges: []
     };
     this.gridValidator = {};
+    this.activePlayerID = -1;
     this.bindListeners({
       createGame: GameActions.gameDataReceived,
-      selectCell: GameActions.selectCell
+      selectCell: GameActions.selectCell,
+      setPlayerID: GameActions.setActivePlayerID
     });
   }
   /**
@@ -33,12 +35,27 @@ class GameStore {
    * @param data - Array of words
    **/
   createGame(data) {
-    let gridCreator = new GameGridCreator(data);
-    gridCreator.makeGrid();
-    this.gridValidator = new GameGridValidator(gridCreator.getGrid(), gridCreator.getMetadata());
+    let grid, gridValidator, metadata;
+    if(localStorage && localStorage.getItem('grid') && localStorage.getItem('gridMetadata')) {
+      grid = JSON.parse(localStorage.getItem('grid'));
+      metadata = JSON.parse(localStorage.getItem('gridMetadata'));
+      gridValidator = new GameGridValidator(grid, metadata);
+    } else {
+      let gridCreator = new GameGridCreator(data);
+      gridCreator.makeGrid();
+      grid = gridCreator.getGrid();
+      metadata = gridCreator.getMetadata();
+      gridValidator = new GameGridValidator(grid, metadata);
+      //Save the grid to localstorage.
+      if(localStorage) {
+        localStorage.setItem('grid', JSON.stringify(gridCreator.getGrid()));
+        localStorage.setItem('gridMetadata', JSON.stringify(metadata));
+      }
+    }
+    this.gridValidator = gridValidator;
     //this updates the view with the game
     this.setState({
-      grid: gridCreator.getGrid()
+      grid
     });
   }
   /**
@@ -105,6 +122,18 @@ class GameStore {
         isValid: false,
         currentRange: [[-1, -1]]
       });
+    }
+    if(localStorage && this.activePlayerID > -1) {
+      localStorage.setItem(`${this.activePlayerID}State`, JSON.stringify(this.state));
+    }
+  }
+  /**
+   * Set Active Player ID
+   **/
+  setPlayerID(playerID) {
+    this.activePlayerID = parseInt(playerID, 10);
+    if(localStorage && localStorage.getItem(`${this.activePlayerID}State`)) {
+      this.setState(JSON.parse(localStorage.getItem(`${this.activePlayerID}State`)));
     }
   }
 }

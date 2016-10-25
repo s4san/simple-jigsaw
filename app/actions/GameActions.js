@@ -26,6 +26,12 @@ class GameActions {
   selectCell(pos) {
     return pos;
   }
+  /**
+   * Set Active Player ID
+   **/
+  setActivePlayerID(playerID) {
+    return playerID;
+  }
 }
 
 export default alt.createActions(GameActions);

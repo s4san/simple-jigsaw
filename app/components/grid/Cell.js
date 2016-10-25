@@ -81,11 +81,11 @@ export default class Cell extends React.Component {
    * Render Cell
    **/
   render() {
-    let className = `${this.state.isSelected ? 'selected' : ''} ${this.state.isCorrect ? 'correct' : ''} ${this.state.isWrong ? 'wrong' : ''}`;
+    let className = `${this.state.isSelected ? ' selected' : ''}${this.state.isCorrect ? ' correct' : ''}${this.state.isWrong ? ' wrong' : ''}`;
     return (
       <div
         ref={this.setDim.bind(this)}
-        className={`cell flex align-center justify-center ${className}`}
+        className={`cell flex align-center justify-center${className}`}
         onClick={this.selectCell.bind(this)}
         onMouseDown={this.pressCell.bind(this)}
         onMouseOut={this.unpressCell.bind(this)}

@@ -3,7 +3,7 @@
  * @param num - Integer
  * @return Integer
  **/
-export var getRandomWithin = (num) => Math.floor(Math.random() * 100 % num);
+export var getRandomWithin = (num) => Math.floor(Math.random() * num);
 /**
  * Given an operator: '+', '-', '='
  * returns a step function that increments, decrements or returns itself respectively
