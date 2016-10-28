@@ -20,7 +20,8 @@ class GameStore {
       isValid: false,
       currentRange: [[-1,-1]],
       foundWords: [],
-      foundRanges: []
+      foundRanges: [],
+      playerScore: 0
     };
     this.gridValidator = {};
     this.activePlayerID = -1;
@@ -81,11 +82,13 @@ class GameStore {
           }, []);
           //Validate Word Formed
           let word = this.gridValidator.getValidatedWord(expandedRange);
+          let valid = !!word;
           this.setState({
-            isValid: !word,
-            currentRange: !!word ? [[-1,-1]] : expandedRange,
-            foundWords: !!word ? [...this.state.foundWords, word] : [...this.state.foundWords],
-            foundRanges: !!word ? [...this.state.foundRanges, expandedRange] : [...this.state.foundRanges]
+            isValid: !valid,
+            currentRange: valid ? [[-1,-1]] : expandedRange,
+            foundWords: valid ? [...this.state.foundWords, word] : [...this.state.foundWords],
+            foundRanges: valid ? [...this.state.foundRanges, expandedRange] : [...this.state.foundRanges],
+            playerScore: valid ? ++this.state.playerScore : this.state.playerScore
           });
         } else if(!GameGridValidator.validateRange(range)) {
           //If Invalid Range is selected; RESET
@@ -97,11 +100,13 @@ class GameStore {
           //If a range of 3+ letters is formed start checking for a valid word
           //If valid word is found, add it to foundWords and RESET; Else wait for a valid word to be formed
           let word = this.gridValidator.getValidatedWord(range);
+          let valid = !!word;
           this.setState({
-            isValid: !word,
-            currentRange: !!word ? [[-1,-1]] : range,
-            foundWords: !!word ? [...this.state.foundWords, word] : [...this.state.foundWords],
-            foundRanges: !!word ? [...this.state.foundRanges, range] : [...this.state.foundRanges]
+            isValid: !valid,  //A valid word is found; RESET to find new words
+            currentRange: valid ? [[-1,-1]] : range,
+            foundWords: valid ? [...this.state.foundWords, word] : [...this.state.foundWords],
+            foundRanges: valid ? [...this.state.foundRanges, range] : [...this.state.foundRanges],
+            playerScore: valid ? ++this.state.playerScore : this.state.playerScore
           });
         } else {
           //If only 3 letters are found; Wait for more letters

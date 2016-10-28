@@ -121,20 +121,37 @@ export default class GameGridCreator {
    * @TODO Give a time-out to decide if word cannot be placed
    **/
   getPosition(word, angle) {
-		while(1) { //Big-O(Scary)!!! - Potentially infinite iterations.
-			let position = {
-				hIndex: angle === ANGLE.HORIZONTAL ? getRandomWithin(GRID_SIZE) : -1,
-				vIndex: angle === ANGLE.VERTICAL ? getRandomWithin(GRID_SIZE) : -1,
-				direction: DIRECTION.FORWARD,
-				angle
-			};
-			let spread = GameGridCreator.spreadWord(word, position.hIndex, position.vIndex, angle);  //Get the spread indices of the word
-			if(unique(this.occupiedIndices, spread.spreadIndices)) { //Check if spreadIndices collide with occupiedIndices
-				this.occupiedIndices = [...this.occupiedIndices, ...spread.spreadIndices];  //push spreadIndices to occupiedIndices
-				return spread;
-			}
+    let triedPositions = [];
+    let canPlace = true;
+    for(var i = 0; i < GRID_SIZE; ++i) {
+      let r = [];
+      for(var j = 0; j < GRID_SIZE; ++j) {
+        r.push(false);
+      }
+      triedPositions.push(r);
+    }
+		while(canPlace) { //Big-O(Scary)!!! - Potentially infinite iterations.
+      let randomRow = getRandomWithin(GRID_SIZE);
+      let randomCol = getRandomWithin(GRID_SIZE);
+      if(!triedPositions[randomRow][randomCol]) {
+        triedPositions[randomRow][randomCol] = true;
+        let position = {
+  				hIndex: angle === ANGLE.HORIZONTAL ? randomRow : -1,
+  				vIndex: angle === ANGLE.VERTICAL ? randomCol : -1,
+  				direction: DIRECTION.FORWARD,
+  				angle
+  			};
+  			let spread = GameGridCreator.spreadWord(word, position.hIndex, position.vIndex, angle);  //Get the spread indices of the word
+  			if(unique(this.occupiedIndices, spread.spreadIndices)) { //Check if spreadIndices collide with occupiedIndices
+  				this.occupiedIndices = [...this.occupiedIndices, ...spread.spreadIndices];  //push spreadIndices to occupiedIndices
+  				return spread;
+  			}
+      } else {
+        canPlace = !!triedPositions.find(row => !!row.find(col => !col));
+      }
       //Continue until a unique spread to place the word is found
 		}
+    return null;
 	}
   /**
    * The main() method of this class.
@@ -142,22 +159,28 @@ export default class GameGridCreator {
    * @TODO: Remove Console Log. Right now, it serves as a refernce to check the correctness of the algorithm.
    **/
   makeGrid() {
+    console.time('GameCreateTime');
     this.grid = GameGridCreator.populateGrid();
   	this.words.forEach((word) => {
   		let angle = getRandomWithin(Object.keys(ANGLE).length);
   		let position = this.getPosition(word, angle);
-  		let data = {
-  			word,
-  			angle,
-  			hIndex: position.hIndex,
-  			vIndex: position.vIndex,
-  			direction: position.direction
-  		};
-  		console.log(data);
-      this.metadata.push(data);
-  		let put = this.putter(data.hIndex, data.vIndex, data.angle, position.directionStepper);
-  		data.word.split('').forEach((char) => put(char));
+      if(position) {
+    		let data = {
+    			word,
+    			angle,
+    			hIndex: position.hIndex,
+    			vIndex: position.vIndex,
+    			direction: position.direction
+    		};
+    		console.log(data);
+        this.metadata.push(data);
+    		let put = this.putter(data.hIndex, data.vIndex, data.angle, position.directionStepper);
+    		data.word.split('').forEach((char) => put(char));
+      } else {
+        console.log(`Ignored Word:\t${word}`)
+      }
   	});
+    console.timeEnd('GameCreateTime');
   }
   /**
    * Grid Getter

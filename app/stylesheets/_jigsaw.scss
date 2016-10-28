@@ -4,48 +4,63 @@ $cell-size: 100% / $grid-size;
 * {
   box-sizing: border-box;
 }
-@media only screen and (min-width: 1200px) {
+@media screen and (min-width: 0) {
   html {
-    font-size: 15px;
+    font-size: 8px;
   }
-}
-@media only screen and (min-width: 992px) {
-  html {
-    font-size: 14.5px;
-  }
-}
-@media only screen and (min-width: 0) {
-  html {
-    font-size: 14px;
-  }
-}
-@media screen and (max-width: 768px) {
   .container {
     margin: 0 auto;
-    width: 80vw;
+    width: 95vw;
+  }
+  .grid {
+    height: 95vw;
+  }
+}
+@media screen and (min-width: 768px) {
+  html {
+    font-size: 12px;
+  }
+  .container {
+    margin: 0 auto;
+    width: 75vw;
+  }
+  .grid {
+    height: 75vw;
+  }
+}
+@media only screen and (min-width: 1200px) {
+  html {
+    font-size: 12px;
+  }
+  .container {
+    margin: 0 auto;
+    width: 50vw;
+  }
+  .grid {
+    height: 50vw;
   }
 }
 body {
   background: $theme100;
   margin: 5rem 0;
 }
-.container {
-  margin: 0 auto;
-  width: 50vw;
+ul {
+  padding: 0;
+  width: 100%;
+  flex-wrap: wrap;
+}
+p {
+  margin: 0;
 }
 nav {
   h1, section h3, section p {
     color: $theme500;
   }
   h1 {
+    margin: 0;
+    text-align: center;
     font-size: 3rem;
     font-weight: bold;
-    margin: 0;
-  }
-  ul {
-    padding: 0;
-    width: 100%;
-    flex-wrap: wrap;
   }
   li {
     cursor: pointer;
@@ -72,8 +87,49 @@ nav {
     color: inherit;
     text-decoration: none;
   }
-  p {
+}
+section {
+  h2 {
     margin: 0;
+    color: $theme500;
+    text-align: center;
+    font-size: 2rem;
+    user-select: none;
+  }
+  ul {
+    &.appear {
+      animation: appear 0.2s ease-in;
+    }
+    @keyframes appear {
+      0% {
+        transform: translateY(-4rem);
+      }
+      50% {
+        transform: translateY(-1rem);
+      }
+      100% {
+        transform: translateY(0rem);
+      }
+    }
+  }
+  li {
+    height: 8rem;
+    width: 8rem;
+    margin: 1rem;
+    padding: 1rem;
+    border-radius: 3px;
+    background: $theme500;
+    color: $theme900;
+    font-weight: bold;
+    font-size: 1.2rem;
+    box-shadow: 0 2px 5px 0 rgba(0,0,0,0.16),0 2px 10px 0 rgba(0,0,0,0.12);
+    user-select: none;
+    will-change: opacity, transform;
+    transition: all .3s ease-out;
+    &:hover {
+      transform: scale3d(1.5, 1.5, 1.5);
+      box-shadow: 0 5px 11px 0 rgba(0,0,0,0.18),0 4px 15px 0 rgba(0,0,0,0.15);
+    }
   }
 }
 .grid {
@@ -82,7 +138,6 @@ nav {
   cursor: pointer;
   background: $theme-color;
   width: 100%;
-  height: auto;
   border-radius: 6px;
 }
 .row {
@@ -93,6 +148,7 @@ nav {
   position: relative;
   height: 100%;
   width: $cell-size;
+  height: 100%;
   background: $theme300;
   padding: 0.3rem;
   color: $theme900;

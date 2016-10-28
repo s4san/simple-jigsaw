@@ -62,7 +62,7 @@ export default class Grid extends React.Component {
    **/
   render() {
     return (
-      <div className="grid flex dir-col justify-center" onClick={this.selectChar.bind(this)}>
+      <div className="grid flex dir-col justify-center align-center" onClick={this.selectChar.bind(this)}>
         {
           this.state.grid.length
             ? this.state.grid.map((row, index) => <Row row={row} key={`${index}`} index={index} />)

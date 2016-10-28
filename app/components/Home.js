@@ -1,5 +1,6 @@
 import React from 'react';
 import Grid from './grid/Grid';
+import Scorecard from './Scorecard';
 import GameActions from '../actions/GameActions';
 /**
  * Export The Home Component for '/' Route
@@ -9,16 +10,17 @@ export default class Home extends React.Component {
   constructor(props) {
     super(props);
     this.params = props.location.query;
+    this.playerID = parseInt(this.params.id, 10) || 1;
   }
 
   componentDidMount() {
-    let playerID = parseInt(this.params.id, 10) || 1;
-    GameActions.setActivePlayerID(playerID);
+    GameActions.setActivePlayerID(this.playerID);
   }
 
   render() {
     return (
       <div className="container">
+        <Scorecard player={this.playerID}/>
         <Grid />
       </div>
     );
